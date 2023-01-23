@@ -10,23 +10,27 @@ export default defineNuxtModule({
       const chance = 0.3;
       let messagesSent = 0;
 
+      nuxt.hook("close", () => io.close());
+
       io.on("connection", (socket) => {
         console.log("new connection established with client on", socket.id);
         socket.emit(
           "welcome",
-          `welcome to the random message server\nyou can kind of expect an emission of a \`message\` event every second (there's a ${
-            chance * 100
-          }% chance for the server to send the message)`
+          `welcome to the server, ${socket.id}`
+          // could add user alias in addition to id
         );
 
-        setInterval(() => {
-          if (Math.random() < chance) {
-            socket.emit("message", `random message number ${++messagesSent}`);
-          }
-        }, 1000);
-        socket.on("message", (data) =>
-          console.log("[message from client]", data)
-        );
+        socket.broadcast.emit("message", `${socket.id} joined the convo`);
+
+        socket.on("message", (data) => {
+          console.log("message received from", socket.id, data);
+          socket.broadcast.emit("message", data);
+        });
+
+        socket.on("disconnecting", () => {
+          console.log("disconnected", socket.id);
+          socket.broadcast.emit("message", `${socket.id} left the convo`);
+        });
       });
 
       console.log("socket listening on", server.address(), server.eventNames());
