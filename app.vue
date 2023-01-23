@@ -5,9 +5,7 @@
       <span>
         {{ msg.data }}
       </span>
-      <span>
-        {{ formatDate(msg.timestamp) }}
-      </span>
+      <TimeLabel :date="msg.timestamp" :format="'HH:mm:ss'" />
     </li>
   </ul>
   <button @click="handleClick">send</button>
@@ -15,7 +13,6 @@
 
 <script setup lang="ts">
 import io, { Socket } from "socket.io-client";
-import { useDateFormat } from "@vueuse/core";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 
 const messages = ref<Array<any>>([]);
@@ -35,9 +32,6 @@ onMounted(() => {
   });
 });
 
-function formatDate(date: Date) {
-  return useDateFormat(date, "HH:mm:ss");
-}
 function handleClick() {
   if (socket) {
     console.log("sending message...");
