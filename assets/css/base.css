@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700;900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --az-white: #fcf9ff;
+  --az-white-soft: #f4ebff;
+  --az-white-mute: #ecdeff;
+
+  --az-black: #140f1c;
+  --az-black-soft: #191222;
+  --az-black-mute: #241a32;
+
+  --az-purple-light: rgb(86, 9, 154);
+  --az-purple-dark: rgb(203, 143, 255);
+
+  --az-divider-light-1: rgba(60, 60, 60, 0.29);
+  --az-divider-light-2: rgba(60, 60, 60, 0.12);
+  --az-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --az-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --az-text-light-1: rgba(60, 60, 60, 0.99);
+  --az-text-light-2: rgba(60, 60, 60, 0.77);
+  --az-text-dark-1: rgba(235, 235, 235, 0.99);
+  --az-text-dark-2: rgba(235, 235, 235, 0.77);
+
+  --az-code-inline-light: rgb(205, 190, 227);
+  --az-code-inline-dark: rgb(56, 49, 58);
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background: var(--az-white);
+  --color-background-soft: var(--az-white-soft);
+  --color-background-mute: var(--az-white-mute);
+
+  --color-link: var(--az-purple-light);
+  --color-link-hover: var(--az-dark-mute);
+
+  --color-border: var(--az-divider-light-2);
+  --color-border-hover: var(--az-divider-light-1);
+
+  --color-heading: var(--az-text-light-1);
+  --color-text: var(--az-text-light-1);
+
+  --color-code-inline: var(--az-code-inline-light);
+
+  --section-gap: 160px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--az-black);
+    --color-background-soft: var(--az-black-soft);
+    --color-background-mute: var(--az-black-mute);
+
+    --color-link: var(--az-purple-dark);
+    --color-link-hover: var(--az-white-mute);
+
+    --color-border: var(--az-divider-dark-2);
+    --color-border-hover: var(--az-divider-dark-1);
+
+    --color-heading: var(--az-text-dark-1);
+    --color-text: var(--az-text-dark-2);
+
+    --color-code-inline: var(--az-code-inline-dark);
+  }
+}
+
+html {
+  font-size: 18px;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition: color 0.5s, background-color 0.5s;
+  line-height: 1.6;
+  font-family: monospace;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: bold;
+  color: var(--color-heading);
+}
+
+h1 {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+h2 {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+h3 {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+h4 {
+  margin-top: 0.3em;
+  margin-bottom: 0.2em;
+}
+
+hr {
+  border: 0;
+  border-top: 2px solid var(--color-border);
+  margin: 1em 1em;
+}

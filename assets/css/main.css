@@ -1,0 +1,19 @@
+@import "./base.css";
+
+a {
+  text-decoration: none;
+  color: var(--color-link);
+  transition: 0.4s;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+code {
+  margin: 0;
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-code-inline);
+}
