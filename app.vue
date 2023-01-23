@@ -22,8 +22,6 @@ const messages = ref<Array<any>>([]);
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
 onMounted(() => {
-  // const uri = "http://192.168.20.31:3000";
-  // const daniUri = "http://192.168.20.31:3000";
   const uri = "http://localhost:3000";
   socket = io(uri);
   console.log(`connected to socket @ ${uri}`);
@@ -38,7 +36,7 @@ onMounted(() => {
 });
 
 function formatDate(date: Date) {
-  return useDateFormat(date, "YYYY-MM-DD HH:mm:ss");
+  return useDateFormat(date, "HH:mm:ss");
 }
 function handleClick() {
   if (socket) {
