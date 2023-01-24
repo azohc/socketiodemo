@@ -46,6 +46,10 @@ onMounted(() => {
   });
 
   socket.on("message", (message: MessageData) => messages.value.push(message));
+
+  socket.on("callout", (message: MessageData) =>
+    messages.value.push({ ...message, sender: "admin" })
+  );
 });
 
 function setAlias(alias: string) {

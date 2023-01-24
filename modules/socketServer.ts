@@ -13,7 +13,8 @@ export default defineNuxtModule({
       console.debug("socket created");
 
       nuxt.hook("close", () => io.close());
-      function broadcastMessage(
+      function broadcast(
+        eventName: string,
         socket: Socket<
           DefaultEventsMap,
           DefaultEventsMap,
@@ -27,28 +28,31 @@ export default defineNuxtModule({
           sender: users.get(socket.id) || socket.id,
           timestamp: new Date().toString(),
         };
-        socket.broadcast.emit("message", data);
+        socket.broadcast.emit(eventName, data);
       }
 
       io.on("connection", (socket) => {
         console.info("new connection established with client on", socket.id);
         socket.emit("welcome", `welcome to the server, ${socket.id}`);
 
-        broadcastMessage(socket, `${socket.id} joined the convo`);
+        setTimeout(
+          () => broadcast("callout", socket, `${socket.id} joined the convo`),
+          3000
+        );
 
         socket.on("message", (message: string) => {
-          broadcastMessage(socket, message);
+          broadcast("message", socket, message);
         });
 
         socket.on("setalias", (alias) => {
           users.set(socket.id, alias);
-          broadcastMessage(socket, `${socket.id} has renamed to ${alias}`);
+          broadcast("callout", socket, `${socket.id} has renamed to ${alias}`);
           socket.emit("welcome", `your display name was changed to ${alias}`);
         });
 
         socket.on("disconnecting", () => {
           console.info("disconnected", socket.id);
-          broadcastMessage(socket, `${socket.id} left the convo`);
+          broadcast("callout", socket, `${socket.id} left the convo`);
         });
       });
 

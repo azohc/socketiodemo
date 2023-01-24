@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul ref="messageList" class="messages">
+    <div ref="messageList" class="messages">
       <li
         class="message"
         :style="{ 'flex-flow': m.sender === null ? 'row-reverse' : 'row' }"
@@ -20,7 +20,7 @@
           :format="'HH:mm:ss'"
         />
       </li>
-    </ul>
+    </div>
   </div>
 </template>
 
@@ -47,10 +47,19 @@ watch(
   },
   { deep: true }
 );
+const cs = (m: MessageData) => {
+  if (m.sender === "admin") {
+    return { "flex-flow": "column" };
+  } else if (m.sender === null) {
+    return { "flex-flow": "row-reverse" };
+  } else {
+    return { "flex-flow": "row" };
+  }
+};
 </script>
 
 <style scoped>
-ul.messages {
+div.messages {
   font-size: 14px;
   display: inline-block;
   background-color: #ccc;
@@ -58,13 +67,8 @@ ul.messages {
   list-style: none;
   padding: 0;
   margin: 0;
-  height: 40vh;
+  height: 66vh;
   width: 55vw;
   overflow-y: scroll;
-}
-li.message {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
 }
 </style>

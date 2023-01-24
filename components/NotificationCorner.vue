@@ -25,5 +25,13 @@ ul.notifications {
   padding: 1rem 1rem;
   margin: 0;
   border-bottom-left-radius: 8px;
+  opacity: 0.66;
+  transform: translateY(-1rem) translateX(55vw);
+  transition: all 400ms;
+}
+
+ul.notifications:hover {
+  opacity: 1;
+  transform: translateX(0) translateY(0);
 }
 </style>
