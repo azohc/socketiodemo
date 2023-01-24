@@ -10,6 +10,13 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      sans: ["Progesterone"],
+      serif: ["Progesterone"],
+      mono: ["Progesterone"],
+      display: ["Progesterone"],
+      body: ["Progesterone"],
+    },
   },
   plugins: [],
 };

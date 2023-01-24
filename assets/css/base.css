@@ -13,10 +13,11 @@
 }
 
 @font-face {
-  font-family: "SummerPixel";
+  font-family: "Progesterone";
   font-weight: 400;
-  src: url("../fonts/SummerPixelWide22Regular-4BoW4.woff") format("woff");
+  src: url("../fonts/Progesterone.woff") format("woff");
 }
+
 html {
   color: var(--c-light);
   background: var(--c-purp-dark);
