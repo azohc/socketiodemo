@@ -6,6 +6,7 @@
   <div v-else>
     <MessageList :messages="messages" />
     <input
+      ref="focusTarget"
       class="text-black"
       type="text"
       v-model="textInput"
@@ -19,6 +20,9 @@
 import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { MessageData } from "./types";
+
+const focusTarget = ref<HTMLElement>();
+useFocus(focusTarget, { initialValue: true });
 
 const clientAlias = ref("");
 
