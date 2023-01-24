@@ -1,37 +1,53 @@
 <template>
   <NotificationCorner :notifications="notifications" />
-  <MessageList :messages="messages" />
-  <input
-    class="text-black"
-    type="text"
-    v-model="textInput"
-    @keyup.enter="submitMessage"
-  />
-  <button @click="submitMessage">send</button>
+  <div v-if="clientAlias === ''">
+    <AliasSetter @alias-submitted="setAlias" />
+  </div>
+  <div v-else>
+    <MessageList :messages="messages" />
+    <input
+      class="text-black"
+      type="text"
+      v-model="textInput"
+      @keyup.enter="submitMessage"
+    />
+    <button @click="submitMessage">send</button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
+import { MessageData } from "./types";
 
-const messages = ref<Array<any>>([]);
+const clientAlias = ref("");
+
+const config = useRuntimeConfig();
+const uri = config.public.wssUri;
+
+const messages = ref<Array<MessageData>>([]);
 const notifications = ref<Array<any>>([]);
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
 const textInput = ref("");
 
 onMounted(() => {
-  const uri = "http://localhost:3000";
   socket = io(uri);
   console.log(`connected to socket @ ${uri}`);
 
   socket.on("welcome", (data) => {
     notifications.value.push({ data, timestamp: new Date() });
   });
-  socket.on("message", (data) =>
-    messages.value.push({ data, timestamp: new Date() })
-  );
+
+  socket.on("message", (message: MessageData) => messages.value.push(message));
 });
+
+function setAlias(alias: string) {
+  if (socket) {
+    socket.emit("setalias", alias);
+    clientAlias.value = alias;
+  }
+}
 
 function submitMessage() {
   if (socket && textInput.value) {
@@ -43,8 +59,11 @@ function submitMessage() {
 function sendMessage(message: string) {
   if (socket) {
     socket.emit("message", message);
-    messages.value.push({ data: message, timestamp: new Date() });
+    messages.value.push({
+      text: message,
+      sender: null,
+      timestamp: new Date().toString(),
+    });
   }
 }
 </script>
-º

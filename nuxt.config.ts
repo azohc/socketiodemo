@@ -9,4 +9,10 @@ export default defineNuxtConfig({
     },
   },
   css: ["@/assets/css/main.css"],
+  runtimeConfig: {
+    public: {
+      apiBase: "/api",
+      wssUri: process.env.wssUri || "fallbackURI",
+    },
+  },
 });

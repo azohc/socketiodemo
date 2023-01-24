@@ -15,6 +15,7 @@ const props = defineProps<{ notifications: Array<any> }>();
 
 <style scoped>
 ul.notifications {
+  text-align: end;
   position: absolute;
   top: 0;
   right: 0;
