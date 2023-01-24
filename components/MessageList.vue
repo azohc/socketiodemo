@@ -1,15 +1,22 @@
 <template>
   <div>
     <div ref="messageList" class="messages">
-      <li
-        class="message"
-        :style="{ 'flex-flow': m.sender === null ? 'row-reverse' : 'row' }"
+      <div
         v-for="m of messageLog"
+        class="px-1 flex justify-between"
+        :class="
+          isCallout(m) ? 'w-2/3 my-4 mx-auto rounded p-1.5 bg-slate-400' : ''
+        "
+        :style="{
+          'flex-flow': getFFlow(m),
+        }"
       >
         <span class="flex gap-2">
-          <span v-if="m.sender" class="text-opacity-75">{{
-            m.sender + ":"
-          }}</span>
+          <span
+            v-if="m.sender && m.sender !== 'admin'"
+            class="text-opacity-75"
+            >{{ m.sender + ":" }}</span
+          >
           <span style="line-break: anywhere">
             {{ m.text }}
           </span>
@@ -19,7 +26,7 @@
           :date="new Date(m.timestamp)"
           :format="'HH:mm:ss'"
         />
-      </li>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +43,14 @@ const { y } = useScroll(messageList, {
   behavior: "smooth",
 });
 
+const isCallout = (m: MessageData) => {
+  return m.sender === "admin";
+};
+
+const isMyOwnMessage = (m: MessageData) => {
+  return m.sender === null;
+};
+
 watch(
   messageLog,
   () => {
@@ -47,13 +62,13 @@ watch(
   },
   { deep: true }
 );
-const cs = (m: MessageData) => {
-  if (m.sender === "admin") {
-    return { "flex-flow": "column" };
-  } else if (m.sender === null) {
-    return { "flex-flow": "row-reverse" };
+const getFFlow = (m: MessageData) => {
+  if (isCallout(m)) {
+    return "column";
+  } else if (isMyOwnMessage(m)) {
+    return "row-reverse";
   } else {
-    return { "flex-flow": "row" };
+    return "row";
   }
 };
 </script>
