@@ -5,14 +5,16 @@
   </div>
   <div v-else>
     <MessageList :messages="messages" />
-    <input
-      ref="focusTarget"
-      class="text-black"
-      type="text"
-      v-model="textInput"
-      @keyup.enter="submitMessage"
-    />
-    <button @click="submitMessage">send</button>
+    <div class="flex gap-2">
+      <input
+        ref="focusTarget"
+        class="text-black flex-grow"
+        type="text"
+        v-model="textInput"
+        @keyup.enter="submitMessage"
+      />
+      <Button variant="default" @button-clicked="submitMessage">send</Button>
+    </div>
   </div>
 </template>
 

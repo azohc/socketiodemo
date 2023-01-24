@@ -1,8 +1,7 @@
 <template>
-  <div class="bg-slate-300 rounded-sm p-2 text-black flex gap-4">
+  <div class="bg-slate-300 rounded-sm p-2 text-black flex gap-4 items-baseline">
     <label for="aliasInput">set your display name for the server</label>
     <input
-      class="rounded-sm bg-slate-200 px-2"
       id="aliasInput"
       type="text"
       ref="focusTarget"
@@ -11,7 +10,13 @@
       maxlength="11"
       placeholder="maxlength11"
     />
-    <button @click="submitAlias" :disabled="aliasInput === ''">submit</button>
+    <Button
+      variant="default"
+      @button-clicked="submitAlias"
+      :disabled="aliasInput === ''"
+    >
+      submit
+    </Button>
   </div>
 </template>
 

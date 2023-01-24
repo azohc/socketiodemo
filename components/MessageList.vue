@@ -15,7 +15,7 @@
           </span>
         </span>
         <TimeLabel
-          class="self-end"
+          class="self-end text-slate-700 text-opacity-75"
           :date="new Date(m.timestamp)"
           :format="'HH:mm:ss'"
         />
@@ -65,5 +65,6 @@ ul.messages {
 li.message {
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
 }
 </style>
