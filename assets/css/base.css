@@ -2,71 +2,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --az-white: #fcf9ff;
-  --az-white-soft: #f4ebff;
-  --az-white-mute: #ecdeff;
-
-  --az-black: #140f1c;
-  --az-black-soft: #191222;
-  --az-black-mute: #241a32;
-
-  --az-purple-light: rgb(86, 9, 154);
-  --az-purple-dark: rgb(203, 143, 255);
-
-  --az-divider-light-1: rgba(60, 60, 60, 0.29);
-  --az-divider-light-2: rgba(60, 60, 60, 0.12);
-  --az-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --az-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --az-text-light-1: rgba(60, 60, 60, 0.99);
-  --az-text-light-2: rgba(60, 60, 60, 0.77);
-  --az-text-dark-1: rgba(235, 235, 235, 0.99);
-  --az-text-dark-2: rgba(235, 235, 235, 0.77);
-
-  --az-code-inline-light: rgb(205, 190, 227);
-  --az-code-inline-dark: rgb(56, 49, 58);
+  --c-purp-dark: #353269;
+  --c-purp-darker: #19182e;
+  --c-green-darker: #082112;
+  --c-light: rgb(221, 236, 227);
+  --c-border: #4a534e;
+  --color-scrollbar: var(--c-purp-dark);
+  --color-scrollbar-hover: var(--c-border);
 }
 
-/* semantic color variables for this project */
-:root {
-  --color-background: var(--az-white);
-  --color-background-soft: var(--az-white-soft);
-  --color-background-mute: var(--az-white-mute);
-
-  --color-link: var(--az-purple-light);
-  --color-link-hover: var(--az-dark-mute);
-
-  --color-border: var(--az-divider-light-2);
-  --color-border-hover: var(--az-divider-light-1);
-
-  --color-heading: var(--az-text-light-1);
-  --color-text: var(--az-text-light-1);
-
-  --color-code-inline: var(--az-code-inline-light);
-
-  --section-gap: 160px;
+@font-face {
+  font-family: "SummerPixel";
+  font-weight: 400;
+  src: url("../fonts/SummerPixelWide22Regular-4BoW4.woff") format("woff");
+}
+html {
+  color: var(--c-light);
+  background: var(--c-purp-dark);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--az-black);
-    --color-background-soft: var(--az-black-soft);
-    --color-background-mute: var(--az-black-mute);
+body {
+  margin: 0;
+}
 
-    --color-link: var(--az-purple-dark);
-    --color-link-hover: var(--az-white-mute);
+.page-enter-active,
+.page-leave-active {
+  transition: all 400ms;
+}
 
-    --color-border: var(--az-divider-dark-2);
-    --color-border-hover: var(--az-divider-dark-1);
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
 
-    --color-heading: var(--az-text-dark-1);
-    --color-text: var(--az-text-dark-2);
-
-    --color-code-inline: var(--az-code-inline-dark);
-  }
+* {
+  scrollbar-color: var(--color-scrollbar) var(--color-background);
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar:horizontal {
+  height: 6px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: var(--c-green);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-hover);
 }
 
 body {
@@ -85,34 +75,6 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  font-weight: bold;
-  color: var(--color-heading);
-}
-
-h1 {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-}
-
-h2 {
-  margin-top: 0.4em;
-  margin-bottom: 0.4em;
-}
-
-h3 {
-  margin-top: 0.3em;
-  margin-bottom: 0.3em;
-}
-
-h4 {
-  margin-top: 0.3em;
-  margin-bottom: 0.2em;
 }
 
 hr {

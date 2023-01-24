@@ -5,7 +5,9 @@
         v-for="m of messageLog"
         class="px-1 flex justify-between"
         :class="
-          isCallout(m) ? 'w-2/3 my-4 mx-auto rounded p-1.5 bg-slate-400' : ''
+          isCallout(m)
+            ? 'w-2/3 px-4 my-3 text-sm  mx-auto rounded p-1.5 bg-slate-400'
+            : 'my-2'
         "
         :style="{
           'flex-flow': getFFlow(m),
@@ -17,7 +19,7 @@
             class="text-opacity-75"
             >{{ m.sender + ":" }}</span
           >
-          <span style="line-break: anywhere">
+          <span>
             {{ m.text }}
           </span>
         </span>
