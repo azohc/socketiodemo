@@ -12,6 +12,7 @@
         type="text"
         v-model="textInput"
         @keyup.enter="submitMessage"
+        @keyup="emitTyping"
       />
       <Button variant="default" @button-clicked="submitMessage">send</Button>
     </div>
@@ -22,9 +23,14 @@
 import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { MessageData } from "./types";
+import { useThrottleFn } from "@vueuse/core";
 
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
+
+const emitTyping = useThrottleFn(() => {
+  if (socket) socket.emit("typing");
+}, 500);
 
 const clientAlias = ref("");
 
@@ -50,6 +56,9 @@ onMounted(() => {
   socket.on("callout", (message: MessageData) =>
     messages.value.push({ ...message, sender: "admin" })
   );
+  socket.on("typing", (usersTyping: any) => {
+    console.log("typin", usersTyping);
+  });
 });
 
 function setAlias(alias: string) {

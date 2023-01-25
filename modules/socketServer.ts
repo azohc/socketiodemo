@@ -7,12 +7,16 @@ export default defineNuxtModule({
   setup(_, nuxt) {
     // socket.id => nickname
     const users = new Map<string, string>();
+    const usersTyping = new Map<string, boolean>();
+    function usersTypingArray(): Array<string> {
+      return [...usersTyping.keys()];
+    }
 
     nuxt.hook("listen", (server) => {
       const io = new Server(server);
+      nuxt.hook("close", () => io.close());
       console.debug("socket created");
 
-      nuxt.hook("close", () => io.close());
       function broadcast(
         eventName: string,
         socket: Socket<
@@ -48,6 +52,30 @@ export default defineNuxtModule({
           users.set(socket.id, alias);
           broadcast("callout", socket, `${socket.id} has renamed to ${alias}`);
           socket.emit("welcome", `your display name was changed to ${alias}`);
+        });
+
+        let typingTimeout: NodeJS.Timeout;
+        let typingTime = 1000;
+        socket.on("typing", () => {
+          const user = users.get(socket.id) || socket.id;
+          if (usersTyping.get(user)) {
+            console.log("user already typing... clearing timeout");
+            clearInterval(typingTimeout);
+            typingTimeout = setTimeout(() => {
+              if (usersTyping.delete(user)) {
+                socket.broadcast.emit("typing", usersTypingArray());
+              }
+            }, typingTime);
+          } else {
+            console.log("new user typing", user);
+            usersTyping.set(user, true);
+            socket.broadcast.emit("typing", usersTypingArray());
+            typingTimeout = setTimeout(() => {
+              if (usersTyping.delete(user)) {
+                socket.broadcast.emit("typing", usersTypingArray());
+              }
+            }, typingTime);
+          }
         });
 
         socket.on("disconnecting", () => {
