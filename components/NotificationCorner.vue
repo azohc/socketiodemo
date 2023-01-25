@@ -1,6 +1,6 @@
 <template>
-  <ul class="notifications">
-    <li v-for="n of props.notifications">
+  <ul class="notifications" :class="{ revealed: isRevealed }">
+    <li v-for="n of notificationLog">
       <span class="px-4">
         {{ n.data }}
       </span>
@@ -11,6 +11,28 @@
 
 <script setup lang="ts">
 const props = defineProps<{ notifications: Array<any> }>();
+const notificationLog = toRef(props, "notifications");
+const isRevealed = ref(false);
+const TIME_TO_HIDE = 3000;
+let hideTimeout: NodeJS.Timeout;
+
+watch(
+  notificationLog,
+  () => {
+    if (!isRevealed.value) {
+      isRevealed.value = true;
+      hideTimeout = setTimeout(() => {
+        isRevealed.value = false;
+      }, TIME_TO_HIDE);
+    } else {
+      clearInterval(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        isRevealed.value = false;
+      }, TIME_TO_HIDE);
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
@@ -29,8 +51,8 @@ ul.notifications {
   transform: translateY(-1rem) translateX(55vw);
   transition: all 400ms;
 }
-
-ul.notifications:hover {
+ul.notifications:hover,
+ul.revealed {
   opacity: 1;
   transform: translateX(0) translateY(0);
 }

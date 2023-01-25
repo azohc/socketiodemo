@@ -8,8 +8,8 @@
   --c-green-darker: #082112;
   --c-light: rgb(221, 236, 227);
   --c-border: #4a534e;
-  --color-scrollbar: var(--c-purp-dark);
-  --color-scrollbar-hover: var(--c-border);
+  --color-scrollbar: var(--c-border);
+  --color-scrollbar-hover: var(--c-purp-darker);
 }
 
 @font-face {
@@ -50,11 +50,9 @@ body {
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-corner {
   background: var(--c-green);
-  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-scrollbar);
-  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-scrollbar-hover);
