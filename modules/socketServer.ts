@@ -17,7 +17,7 @@ export default defineNuxtModule({
       nuxt.hook("close", () => io.close());
       console.debug("socket created");
 
-      function broadcast(
+      function broadcastMessage(
         eventName: string,
         socket: Socket<
           DefaultEventsMap,
@@ -40,17 +40,26 @@ export default defineNuxtModule({
         socket.emit("welcome", `welcome to the server, ${socket.id}`);
 
         setTimeout(
-          () => broadcast("callout", socket, `${socket.id} joined the convo`),
+          () =>
+            broadcastMessage(
+              "callout",
+              socket,
+              `${socket.id} joined the convo`
+            ),
           3000
         );
 
         socket.on("message", (message: string) => {
-          broadcast("message", socket, message);
+          broadcastMessage("message", socket, message);
         });
 
         socket.on("setalias", (alias) => {
           users.set(socket.id, alias);
-          broadcast("callout", socket, `${socket.id} has renamed to ${alias}`);
+          broadcastMessage(
+            "callout",
+            socket,
+            `${socket.id} has renamed to ${alias}`
+          );
           socket.emit("welcome", `your display name was changed to ${alias}`);
         });
 
@@ -59,7 +68,6 @@ export default defineNuxtModule({
         socket.on("typing", () => {
           const user = users.get(socket.id) || socket.id;
           if (usersTyping.get(user)) {
-            console.log("user already typing... clearing timeout");
             clearInterval(typingTimeout);
             typingTimeout = setTimeout(() => {
               if (usersTyping.delete(user)) {
@@ -67,7 +75,6 @@ export default defineNuxtModule({
               }
             }, typingTime);
           } else {
-            console.log("new user typing", user);
             usersTyping.set(user, true);
             socket.broadcast.emit("typing", usersTypingArray());
             typingTimeout = setTimeout(() => {
@@ -80,7 +87,7 @@ export default defineNuxtModule({
 
         socket.on("disconnecting", () => {
           console.info("disconnected", socket.id);
-          broadcast("callout", socket, `${socket.id} left the convo`);
+          broadcastMessage("callout", socket, `${socket.id} left the convo`);
         });
       });
 
