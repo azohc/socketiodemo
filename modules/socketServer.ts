@@ -6,6 +6,11 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 export default defineNuxtModule({
   setup(_, nuxt) {
     const userMap = new Map<string, UserData>();
+
+    function getUsersObject() {
+      return [...userMap.values()];
+    }
+
     function usersTypingArray(): Array<string> {
       return [...userMap.entries()]
         .filter(([id, userData]) => userData.online && userData.typing)
@@ -63,45 +68,36 @@ export default defineNuxtModule({
         console.info("new connection established with client on", socket.id);
         socket.emit("welcome", `welcome to the server, ${socket.id}`);
 
-        setTimeout(
-          () =>
-            broadcastMessage(
-              "callout",
-              socket,
-              `${socket.id} joined the convo`
-            ),
-          3000
-        );
-
         socket.on("message", (message: string) => {
           broadcastMessage("message", socket, message);
         });
 
         socket.on("setalias", (alias) => {
           userMap.set(socket.id, { alias, online: true, typing: false });
-          broadcastMessage(
-            "callout",
-            socket,
-            `${socket.id} has renamed to ${alias}`
-          );
+          socket.emit("userschanged", getUsersObject());
+          socket.broadcast.emit("userschanged", getUsersObject());
+          broadcastMessage("callout", socket, `${alias} joined the convo`);
           socket.emit("welcome", `your display name was changed to ${alias}`);
         });
 
         let typingTimeout: NodeJS.Timeout;
         let typingTime = 1000;
         socket.on("typing", () => {
+          const updateTyping = (typing: boolean) => {
+            setUserTyping(socket.id, typing);
+            socket.broadcast.emit("typing", usersTypingArray());
+            socket.broadcast.emit("userschanged", getUsersObject());
+          };
+
           if (userIsTyping(socket.id)) {
             clearInterval(typingTimeout);
             typingTimeout = setTimeout(() => {
-              setUserTyping(socket.id, false);
-              socket.broadcast.emit("typing", usersTypingArray());
+              updateTyping(false);
             }, typingTime);
           } else {
-            setUserTyping(socket.id, true);
-            socket.broadcast.emit("typing", usersTypingArray());
+            updateTyping(true);
             typingTimeout = setTimeout(() => {
-              setUserTyping(socket.id, false);
-              socket.broadcast.emit("typing", usersTypingArray());
+              updateTyping(false);
             }, typingTime);
           }
         });
@@ -109,6 +105,25 @@ export default defineNuxtModule({
         socket.on("disconnecting", () => {
           console.info("disconnected", socket.id);
           broadcastMessage("callout", socket, `${socket.id} left the convo`);
+
+          const userData = userMap.get(socket.id);
+          if (!userData) {
+            throw new Error(
+              `user with id=${socket.id} doesn't exist on userMap=${[
+                ...userMap.entries(),
+              ]}`
+            );
+          }
+          userMap.set(socket.id, { ...userData, online: false });
+
+          if (userMap.size > 8) {
+            userMap.forEach((value: UserData, key: string) => {
+              if (!value.online) {
+                userMap.delete(key);
+              }
+            });
+          }
+          socket.broadcast.emit("userschanged", getUsersObject());
         });
       });
 

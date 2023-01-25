@@ -1,47 +1,43 @@
 <template>
-  <div>
-    <div ref="messageList" class="messages rounded-sm">
-      <div
-        v-for="m of messageLog"
-        class="px-1 flex justify-between"
-        :class="
-          isCallout(m)
-            ? 'w-2/3 px-4 my-3 text-sm  mx-auto rounded p-1.5 bg-slate-400'
-            : 'my-2'
-        "
-        :style="{
-          'flex-flow': getFFlow(m),
-        }"
-      >
-        <span class="flex gap-2">
-          <span
-            v-if="m.sender && m.sender !== 'admin'"
-            class="text-opacity-75"
-            >{{ m.sender + ":" }}</span
-          >
-          <span>
-            {{ m.text }}
-          </span>
+  <div ref="messageList" class="messages rounded-sm pr-1">
+    <div
+      v-for="m of messageLog"
+      class="px-1 flex justify-between"
+      :class="
+        isCallout(m)
+          ? 'w-2/3 px-4 my-3 text-sm  mx-auto rounded p-1.5 bg-slate-400'
+          : 'my-2'
+      "
+      :style="{
+        'flex-flow': getFFlow(m),
+      }"
+    >
+      <span class="flex gap-2">
+        <span v-if="m.sender && m.sender !== 'admin'" class="text-opacity-75">{{
+          m.sender + ":"
+        }}</span>
+        <span>
+          {{ m.text }}
         </span>
-        <TimeLabel
-          class="self-end text-slate-700 text-opacity-75"
-          :date="new Date(m.timestamp)"
-          :format="'HH:mm:ss'"
-        />
-      </div>
-      <span
-        class="flex gap-2 px-1.5 relative bottom-0 text-black text-opacity-50 italic"
-      >
-        <span v-for="(alias, index) in typingUsers"
-          >{{ alias }}
-          {{
-            typingUsers.length > 1 && index < typingUsers.length - 1 ? "," : ""
-          }}
-        </span>
-        <span v-if="typingUsers.length === 1">is typing...</span>
-        <span v-else-if="typingUsers.length > 1">are typing...</span>
       </span>
+      <TimeLabel
+        class="self-end text-slate-700 text-opacity-75"
+        :date="new Date(m.timestamp)"
+        :format="'HH:mm:ss'"
+      />
     </div>
+    <span
+      class="flex gap-2 px-1.5 relative bottom-0 text-black text-opacity-50 italic"
+    >
+      <span v-for="(alias, index) in typingUsers"
+        >{{ alias }}
+        {{
+          typingUsers.length > 1 && index < typingUsers.length - 1 ? "," : ""
+        }}
+      </span>
+      <span v-if="typingUsers.length === 1">is typing...</span>
+      <span v-else-if="typingUsers.length > 1">are typing...</span>
+    </span>
   </div>
 </template>
 
@@ -69,7 +65,7 @@ const isMyOwnMessage = (m: MessageData) => {
 };
 
 watch(
-  messageLog,
+  [messageLog, typingUsers],
   () => {
     nextTick(() => {
       if (messageList.value) {
@@ -79,6 +75,7 @@ watch(
   },
   { deep: true }
 );
+
 const getFFlow = (m: MessageData) => {
   if (isCallout(m)) {
     return "column";
@@ -100,7 +97,6 @@ div.messages {
   padding: 0;
   margin: 0;
   height: 66vh;
-  width: 55vw;
   overflow-y: scroll;
 }
 </style>

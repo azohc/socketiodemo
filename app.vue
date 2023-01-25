@@ -3,19 +3,21 @@
   <div v-if="clientAlias === ''">
     <AliasSetter @alias-submitted="setAlias" />
   </div>
-  <div v-else>
-    <!-- <UserPanel :users=""/> -->
-    <MessageList :messages="messages" :typingUsers="typingUsers" />
-    <div class="flex gap-2">
-      <input
-        ref="focusTarget"
-        class="text-black flex-grow"
-        type="text"
-        v-model="textInput"
-        @keyup.enter="submitMessage"
-        @keyup="emitTyping"
-      />
-      <Button variant="default" @button-clicked="submitMessage">send</Button>
+  <div v-else class="flex flex-col gap-2 sm:flex-row">
+    <UserPanel :users="users" />
+    <div class="flex flex-col gap-2 w-[80vw] sm:w-[60vw]">
+      <MessageList :messages="messages" :typingUsers="typingUsers" />
+      <div class="flex gap-2">
+        <input
+          ref="focusTarget"
+          class="text-black flex-grow"
+          type="text"
+          v-model="textInput"
+          @keyup.enter="submitMessage"
+          @keyup="emitTyping"
+        />
+        <Button variant="default" @button-clicked="submitMessage">send</Button>
+      </div>
     </div>
   </div>
 </template>
@@ -23,7 +25,7 @@
 <script setup lang="ts">
 import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
-import { MessageData } from "./types";
+import { MessageData, UserData } from "./types";
 import { useThrottleFn } from "@vueuse/core";
 
 const focusTarget = ref<HTMLElement>();
@@ -39,6 +41,7 @@ const clientAlias = ref<string>("");
 const config = useRuntimeConfig();
 const uri = config.public.wssUri;
 
+const users = ref<Array<UserData>>([]);
 const messages = ref<Array<MessageData>>([]);
 const notifications = ref<Array<any>>([]);
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
@@ -63,6 +66,10 @@ onMounted(() => {
     typingUsers.value = usersTyping.filter(
       (alias) => alias !== clientAlias.value
     );
+  });
+
+  socket.on("userschanged", (userss: Array<UserData>) => {
+    users.value = userss;
   });
 });
 
