@@ -1,15 +1,39 @@
 import { Server, Socket } from "socket.io";
 import { defineNuxtModule } from "@nuxt/kit";
-import { MessageData } from "~~/types";
+import { MessageData, UserData } from "~~/types";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 export default defineNuxtModule({
   setup(_, nuxt) {
-    // socket.id => nickname
-    const users = new Map<string, string>();
-    const usersTyping = new Map<string, boolean>();
+    const userMap = new Map<string, UserData>();
     function usersTypingArray(): Array<string> {
-      return [...usersTyping.keys()];
+      return [...userMap.entries()]
+        .filter(([id, userData]) => userData.online && userData.typing)
+        .map(([id, userData]) => userData.alias);
+    }
+
+    function setUserTyping(id: string, typing: boolean) {
+      const userData = userMap.get(id);
+      if (!userData) {
+        throw new Error(
+          `user with id=${id} doesn't exist on userMap=${[
+            ...userMap.entries(),
+          ]}`
+        );
+      }
+      userMap.set(id, { ...userData, typing });
+    }
+
+    function userIsTyping(id: string): boolean {
+      const userData = userMap.get(id);
+      if (!userData) {
+        throw new Error(
+          `user with id=${id} doesn't exist on userMap=${[
+            ...userMap.entries(),
+          ]}`
+        );
+      }
+      return userData.typing;
     }
 
     nuxt.hook("listen", (server) => {
@@ -29,7 +53,7 @@ export default defineNuxtModule({
       ) {
         const data: MessageData = {
           text,
-          sender: users.get(socket.id) || socket.id,
+          sender: userMap.get(socket.id)?.alias || socket.id,
           timestamp: new Date().toString(),
         };
         socket.broadcast.emit(eventName, data);
@@ -54,7 +78,7 @@ export default defineNuxtModule({
         });
 
         socket.on("setalias", (alias) => {
-          users.set(socket.id, alias);
+          userMap.set(socket.id, { alias, online: true, typing: false });
           broadcastMessage(
             "callout",
             socket,
@@ -66,21 +90,18 @@ export default defineNuxtModule({
         let typingTimeout: NodeJS.Timeout;
         let typingTime = 1000;
         socket.on("typing", () => {
-          const user = users.get(socket.id) || socket.id;
-          if (usersTyping.get(user)) {
+          if (userIsTyping(socket.id)) {
             clearInterval(typingTimeout);
             typingTimeout = setTimeout(() => {
-              if (usersTyping.delete(user)) {
-                socket.broadcast.emit("typing", usersTypingArray());
-              }
+              setUserTyping(socket.id, false);
+              socket.broadcast.emit("typing", usersTypingArray());
             }, typingTime);
           } else {
-            usersTyping.set(user, true);
+            setUserTyping(socket.id, true);
             socket.broadcast.emit("typing", usersTypingArray());
             typingTimeout = setTimeout(() => {
-              if (usersTyping.delete(user)) {
-                socket.broadcast.emit("typing", usersTypingArray());
-              }
+              setUserTyping(socket.id, false);
+              socket.broadcast.emit("typing", usersTypingArray());
             }, typingTime);
           }
         });

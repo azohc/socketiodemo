@@ -4,7 +4,8 @@
     <AliasSetter @alias-submitted="setAlias" />
   </div>
   <div v-else>
-    <MessageList :messages="messages" />
+    <!-- <UserPanel :users=""/> -->
+    <MessageList :messages="messages" :typingUsers="typingUsers" />
     <div class="flex gap-2">
       <input
         ref="focusTarget"
@@ -32,7 +33,8 @@ const emitTyping = useThrottleFn(() => {
   if (socket) socket.emit("typing");
 }, 500);
 
-const clientAlias = ref("");
+const typingUsers = ref<Array<string>>([]);
+const clientAlias = ref<string>("");
 
 const config = useRuntimeConfig();
 const uri = config.public.wssUri;
@@ -56,8 +58,11 @@ onMounted(() => {
   socket.on("callout", (message: MessageData) =>
     messages.value.push({ ...message, sender: "admin" })
   );
-  socket.on("typing", (usersTyping: any) => {
-    console.log("typin", usersTyping);
+
+  socket.on("typing", (usersTyping: Array<string>) => {
+    typingUsers.value = usersTyping.filter(
+      (alias) => alias !== clientAlias.value
+    );
   });
 });
 

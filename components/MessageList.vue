@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="messageList" class="messages">
+    <div ref="messageList" class="messages rounded-sm">
       <div
         v-for="m of messageLog"
         class="px-1 flex justify-between"
@@ -29,6 +29,18 @@
           :format="'HH:mm:ss'"
         />
       </div>
+      <span
+        class="flex gap-2 px-1.5 relative bottom-0 text-black text-opacity-50 italic"
+      >
+        <span v-for="(alias, index) in typingUsers"
+          >{{ alias }}
+          {{
+            typingUsers.length > 1 && index < typingUsers.length - 1 ? "," : ""
+          }}
+        </span>
+        <span v-if="typingUsers.length === 1">is typing...</span>
+        <span v-else-if="typingUsers.length > 1">are typing...</span>
+      </span>
     </div>
   </div>
 </template>
@@ -36,9 +48,12 @@
 <script setup lang="ts">
 import { MessageData } from "../types";
 
-const props = defineProps<{ messages: Array<MessageData> }>();
+const props = defineProps<{
+  messages: Array<MessageData>;
+  typingUsers: Array<string>;
+}>();
 
-const messageLog = toRef(props, "messages");
+const { messages: messageLog, typingUsers } = toRefs(props);
 const messageList = ref<HTMLElement>();
 
 const { y } = useScroll(messageList, {
