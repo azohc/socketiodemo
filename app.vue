@@ -1,4 +1,13 @@
 <template>
+  <div class="absolute top-0 left-0 m-2 flex gap-2">
+    <!-- <div v-if="user !== null && user.email"> -->
+    <Button @button-clicked="register" variant="primary">register</Button>
+    <Button @button-clicked="login" variant="primary">log in</Button>
+    <!-- </div> -->
+    <!-- <div v-else> -->
+    hello {{ user?.email }}
+    <!-- </div> -->
+  </div>
   <NotificationCorner :notifications="notifications" />
   <div v-if="clientAlias === ''">
     <AliasSetter @alias-submitted="setAlias" />
@@ -27,6 +36,8 @@ import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { MessageData, UserData } from "./types";
 import { useThrottleFn } from "@vueuse/core";
+import Button from "./components/Button.vue";
+import { User } from "@firebase/auth";
 
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
@@ -48,6 +59,7 @@ const messages = ref<Array<MessageData>>([]);
 const notifications = ref<Array<any>>([]);
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
+const { user, login, register } = useFirebase();
 const textInput = ref("");
 
 onMounted(() => {
@@ -73,6 +85,8 @@ onMounted(() => {
   socket.on("userschanged", (userss: Array<UserData>) => {
     users.value = userss;
   });
+
+  console.log("fbuser", user.value);
 });
 
 function setAlias(alias: string) {
