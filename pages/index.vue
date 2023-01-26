@@ -9,6 +9,7 @@
     <!-- <div v-else> -->
     hello {{ user?.email }}
     <!-- </div> -->
+    <NuxtLink to="/user">user</NuxtLink>
   </div>
   <NotificationCorner :notifications="notifications" />
   <div v-if="clientAlias === ''">
@@ -36,9 +37,8 @@
 <script setup lang="ts">
 import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
-import { MessageData, UserData } from "./types";
+import { MessageData, UserData } from "../types";
 import { useThrottleFn } from "@vueuse/core";
-import Button from "./components/Button.vue";
 
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
@@ -86,8 +86,6 @@ onMounted(() => {
   socket.on("userschanged", (userss: Array<UserData>) => {
     users.value = userss;
   });
-
-  console.log("fbuser", user.value);
 });
 
 function setAlias(alias: string) {
