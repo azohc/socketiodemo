@@ -26,6 +26,7 @@
           v-model="textInput"
           @keyup.enter="submitMessage"
           @keyup="emitTyping"
+          maxlength="222"
         />
         <Button variant="default" @button-clicked="submitMessage">send</Button>
       </div>
@@ -70,11 +71,17 @@ onMounted(() => {
     notifications.value.push({ data, timestamp: new Date() });
   });
 
-  socket.on("message", (message: MessageData) => messages.value.push(message));
+  socket.on("message", (message: MessageData) => {
+    console.log("message", message);
+    messages.value.push(message);
+  });
+  socket.on("link", (message: MessageData) => {
+    console.log("link", message);
 
-  socket.on("callout", (message: MessageData) =>
-    messages.value.push({ ...message, sender: "admin" })
-  );
+    messages.value.push(message);
+  });
+
+  socket.on("callout", (message: MessageData) => messages.value.push(message));
 
   socket.on("typing", (usersTyping: Array<string>) => {
     typingUsers.value = usersTyping.filter(
@@ -95,16 +102,28 @@ function setAlias(alias: string) {
 }
 
 function submitMessage() {
+  function validURL(s: string) {
+    var regexp =
+      /^(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*$/gmu;
+    return regexp.test(s);
+  }
+
   if (socket && textInput.value) {
-    sendMessage(textInput.value);
+    let type = "message";
+    if (validURL(textInput.value)) {
+      type = "link";
+    }
+
+    sendMessage(textInput.value, type as MessageData["type"]);
     textInput.value = "";
   }
 }
 
-function sendMessage(message: string) {
+function sendMessage(message: string, type: MessageData["type"]) {
   if (socket) {
-    socket.emit("message", message);
+    socket.emit(type, message);
     messages.value.push({
+      type,
       text: message,
       sender: null,
       timestamp: new Date().toString(),

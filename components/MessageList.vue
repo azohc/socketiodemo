@@ -4,7 +4,7 @@
       v-for="m of messageLog"
       class="px-1 flex justify-between"
       :class="
-        isCallout(m)
+        m.type === 'callout'
           ? 'w-2/3 px-4 my-3 text-sm  mx-auto rounded p-1.5 bg-slate-400'
           : 'my-2'
       "
@@ -12,13 +12,27 @@
         'flex-flow': getFFlow(m),
       }"
     >
-      <span class="flex gap-2">
-        <span v-if="m.sender && m.sender !== 'admin'" class="text-opacity-75">{{
+      <span v-if="m.type === 'message'">
+        <!-- regular message from somebody else or myself -->
+        <span class="flex gap-2">
+          <!-- if m.sender = null => its my own message -->
+          <span v-if="m.sender" class="text-opacity-75">{{
+            m.sender + ":"
+          }}</span>
+          <span> {{ m.text }}</span>
+        </span>
+      </span>
+      <span v-else-if="m.type === 'callout'">
+        {{ m.text }}
+      </span>
+      <img v-else-if="m.type === 'img'" :src="m.text" />
+      <span v-else-if="m.type === 'link'" class="text-purple-900 flex gap-2">
+        <span v-if="m.sender" class="text-opacity-75">{{
           m.sender + ":"
         }}</span>
-        <span>
+        <a :href="m.text" target="_blank">
           {{ m.text }}
-        </span>
+        </a>
       </span>
       <TimeLabel
         class="self-end text-slate-700 text-opacity-75"
@@ -56,10 +70,6 @@ const { y } = useScroll(messageList, {
   behavior: "smooth",
 });
 
-const isCallout = (m: MessageData) => {
-  return m.sender === "admin";
-};
-
 const isMyOwnMessage = (m: MessageData) => {
   return m.sender === null;
 };
@@ -77,7 +87,7 @@ watch(
 );
 
 const getFFlow = (m: MessageData) => {
-  if (isCallout(m)) {
+  if (m.type === "callout") {
     return "column";
   } else if (isMyOwnMessage(m)) {
     return "row-reverse";

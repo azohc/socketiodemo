@@ -47,7 +47,7 @@ export default defineNuxtModule({
       console.debug("socket created");
 
       function broadcastMessage(
-        eventName: string,
+        eventName: MessageData["type"],
         socket: Socket<
           DefaultEventsMap,
           DefaultEventsMap,
@@ -60,6 +60,7 @@ export default defineNuxtModule({
           text,
           sender: userMap.get(socket.id)?.alias || socket.id,
           timestamp: new Date().toString(),
+          type: eventName,
         };
         socket.broadcast.emit(eventName, data);
       }
@@ -72,10 +73,14 @@ export default defineNuxtModule({
           broadcastMessage("message", socket, message);
         });
 
+        socket.on("link", (message: string) => {
+          broadcastMessage("link", socket, message);
+        });
+
         socket.on("setalias", (alias) => {
           userMap.set(socket.id, { alias, online: true, typing: false });
-          socket.emit("userschanged", getUsersObject());
-          socket.broadcast.emit("userschanged", getUsersObject());
+          // socket.emit("userschanged", getUsersObject());
+          // socket.broadcast.emit("userschanged", getUsersObject());
           broadcastMessage("callout", socket, `${alias} joined the convo`);
           socket.emit("welcome", `your display name was changed to ${alias}`);
         });

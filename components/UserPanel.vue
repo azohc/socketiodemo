@@ -12,12 +12,12 @@
       <span :class="{ 'text-opacity-60': !user.online }">
         {{ user.alias }}
       </span>
-      {{ user.typing ? "..." : "" }}
+      <TypingEllipsis v-if="user.typing" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { UserData } from "../types";
-const props = defineProps<{ users: Array<UserData> }>();
+defineProps<{ users: Array<UserData> }>();
 </script>
