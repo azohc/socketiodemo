@@ -38,7 +38,6 @@ export default function () {
   async function login() {
     try {
       await signInWithEmailAndPassword($auth, email, password);
-      user.value = userCredential.user;
     } catch (error: any) {
       handleError("login", error);
     }
