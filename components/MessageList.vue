@@ -19,7 +19,7 @@
           <span v-if="m.sender" class="text-opacity-75">{{
             m.sender + ":"
           }}</span>
-          <span> {{ m.text }}</span>
+          <span class="hyphenate" lang="es"> {{ m.text }}</span>
         </span>
       </span>
       <span v-else-if="m.type === 'callout'">
@@ -108,5 +108,10 @@ div.messages {
   margin: 0;
   height: 66vh;
   overflow-y: scroll;
+}
+
+.hyphenate {
+  word-break: break-word;
+  hyphens: auto;
 }
 </style>
