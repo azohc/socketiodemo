@@ -1,8 +1,10 @@
 <template>
-  <div class="absolute top-0 left-0 m-2 flex gap-2">
+  <div class="absolute top-0 left-0 m-2 flex gap-2 items-baseline">
     <!-- <div v-if="user !== null && user.email"> -->
     <Button @button-clicked="register" variant="primary">register</Button>
     <Button @button-clicked="login" variant="primary">log in</Button>
+    <Button @button-clicked="glogin" variant="primary">google log in</Button>
+    <Button @button-clicked="logout" variant="primary">log out</Button>
     <!-- </div> -->
     <!-- <div v-else> -->
     hello {{ user?.email }}
@@ -37,7 +39,6 @@ import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { MessageData, UserData } from "./types";
 import { useThrottleFn } from "@vueuse/core";
 import Button from "./components/Button.vue";
-import { User } from "@firebase/auth";
 
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
@@ -59,7 +60,7 @@ const messages = ref<Array<MessageData>>([]);
 const notifications = ref<Array<any>>([]);
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | undefined;
 
-const { user, login, register } = useFirebase();
+const { user, login, glogin, register, logout } = useFirebase();
 const textInput = ref("");
 
 onMounted(() => {

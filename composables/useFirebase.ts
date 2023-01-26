@@ -1,18 +1,28 @@
 import {
   createUserWithEmailAndPassword,
-  getAuth,
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
   User,
 } from "@firebase/auth";
 
 export default function () {
   const { $auth } = useNuxtApp();
 
-  // basic state, could use store...
+  // basic store, could use pinia for more power...
   const user = useState<User | null>("firebase-user", () => null);
 
   const email = "juanchozass@gmail.com",
     password = "123456";
+
+  function handleError(place: string, error: any) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.error(
+      `error in useFirebase.ts::${place}: ${errorCode} ${errorMessage}`
+    );
+  }
 
   async function register() {
     try {
@@ -23,11 +33,7 @@ export default function () {
       );
       console.log("signed in", user);
     } catch (error: any) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(
-        `error in useFirebase.ts::register: ${errorCode} ${errorMessage}`
-      );
+      handleError("register", error);
     }
   }
 
@@ -40,17 +46,34 @@ export default function () {
       );
       user.value = userCredential.user;
     } catch (error: any) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(
-        `error in useFirebase.ts::login: ${errorCode} ${errorMessage}`
-      );
+      handleError("login", error);
+    }
+  }
+
+  async function googleLogin() {
+    const provider = new GoogleAuthProvider();
+    try {
+      const userCredential = await signInWithPopup($auth, provider);
+      user.value = userCredential.user;
+    } catch (error: any) {
+      handleError("googleLogin", error);
+    }
+  }
+
+  function logout() {
+    try {
+      signOut($auth);
+      user.value = null;
+    } catch (error: any) {
+      handleError("logout", error);
     }
   }
 
   return {
     user,
     login,
+    glogin: googleLogin,
     register,
+    logout,
   };
 }

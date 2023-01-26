@@ -2,13 +2,14 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 export default defineNuxtPlugin((nuxtApp) => {
+  const config = useRuntimeConfig();
   const firebaseConfig = {
-    apiKey: "AIzaSyBDGCaoZmFv2jSoUXkgwQzVyGKuB4Zveg0",
-    authDomain: "nuxt-ws-chat.firebaseapp.com",
-    projectId: "nuxt-ws-chat",
-    storageBucket: "nuxt-ws-chat.appspot.com",
-    messagingSenderId: "620325128389",
-    appId: "1:620325128389:web:9f77280662a8afd4e588ac",
+    apiKey: config.public.firebaseApiKey,
+    authDomain: config.public.firebaseAuthDomain,
+    projectId: config.public.firebaseProjectId,
+    storageBucket: config.public.firebaseStorageBucket,
+    messagingSenderId: config.public.firebaseMessagingSenderId,
+    appId: config.public.firebaseAppId,
   };
 
   const app = initializeApp(firebaseConfig);
