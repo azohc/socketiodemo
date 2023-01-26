@@ -1,15 +1,14 @@
 <template>
-  <div class="absolute top-0 left-0 m-2 flex gap-2 items-baseline">
-    <!-- <div v-if="user !== null && user.email"> -->
-    <Button @button-clicked="register" variant="primary">register</Button>
-    <Button @button-clicked="login" variant="primary">log in</Button>
-    <Button @button-clicked="glogin" variant="primary">google log in</Button>
-    <Button @button-clicked="logout" variant="primary">log out</Button>
-    <!-- </div> -->
-    <!-- <div v-else> -->
-    hello {{ user?.email }}
-    <!-- </div> -->
-    <NuxtLink to="/user">user</NuxtLink>
+  <div class="absolute top-0 left-0 m-2">
+    <div v-if="user === null" class="flex gap-2 items-baseline">
+      <Button @button-clicked="register" variant="primary">register</Button>
+      <Button @button-clicked="login" variant="primary">log in</Button>
+      <Button @button-clicked="glogin" variant="primary">google log in</Button>
+    </div>
+    <div v-else class="flex gap-2 items-baseline">
+      <NuxtLink to="/user">{{ user?.email }}</NuxtLink>
+      <Button @button-clicked="logout" variant="primary">log out</Button>
+    </div>
   </div>
   <NotificationCorner :notifications="notifications" />
   <div v-if="clientAlias === ''">

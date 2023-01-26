@@ -16,6 +16,8 @@ export default function () {
   const email = "juanchozass@gmail.com",
     password = "123456";
 
+  $auth.onAuthStateChanged((_user: User) => (user.value = _user));
+
   function handleError(place: string, error: any) {
     const errorCode = error.code;
     const errorMessage = error.message;
@@ -26,11 +28,7 @@ export default function () {
 
   async function register() {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        $auth,
-        email,
-        password
-      );
+      await createUserWithEmailAndPassword($auth, email, password);
       console.log("signed in", user);
     } catch (error: any) {
       handleError("register", error);
@@ -39,11 +37,7 @@ export default function () {
 
   async function login() {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        $auth,
-        email,
-        password
-      );
+      await signInWithEmailAndPassword($auth, email, password);
       user.value = userCredential.user;
     } catch (error: any) {
       handleError("login", error);
@@ -53,8 +47,7 @@ export default function () {
   async function googleLogin() {
     const provider = new GoogleAuthProvider();
     try {
-      const userCredential = await signInWithPopup($auth, provider);
-      user.value = userCredential.user;
+      await signInWithPopup($auth, provider);
     } catch (error: any) {
       handleError("googleLogin", error);
     }
@@ -63,7 +56,6 @@ export default function () {
   function logout() {
     try {
       signOut($auth);
-      user.value = null;
     } catch (error: any) {
       handleError("logout", error);
     }
