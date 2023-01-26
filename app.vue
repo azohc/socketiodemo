@@ -31,8 +31,10 @@ import { useThrottleFn } from "@vueuse/core";
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
 
-const emitTyping = useThrottleFn(() => {
-  if (socket) socket.emit("typing");
+const emitTyping = useThrottleFn((event: KeyboardEvent) => {
+  if (socket && event.code !== "Enter") {
+    socket.emit("typing");
+  }
 }, 500);
 
 const typingUsers = ref<Array<string>>([]);
