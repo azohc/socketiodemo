@@ -79,8 +79,8 @@ export default defineNuxtModule({
 
         socket.on("setalias", (alias) => {
           userMap.set(socket.id, { alias, online: true, typing: false });
-          // socket.emit("userschanged", getUsersObject());
-          // socket.broadcast.emit("userschanged", getUsersObject());
+          socket.emit("userschanged", getUsersObject());
+          socket.broadcast.emit("userschanged", getUsersObject());
           broadcastMessage("callout", socket, `${alias} joined the convo`);
           socket.emit("welcome", `your display name was changed to ${alias}`);
         });
