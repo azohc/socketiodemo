@@ -6,21 +6,18 @@
       :class="
         m.type === 'callout'
           ? 'w-2/3 px-4 my-3 text-sm  mx-auto rounded p-1.5 bg-slate-400'
-          : 'my-2'
+          : 'my-2 gap-2'
       "
       :style="{
         'flex-flow': getFFlow(m),
       }"
     >
-      <span v-if="m.type === 'message'">
-        <!-- regular message from somebody else or myself -->
-        <span class="flex gap-2">
-          <!-- if m.sender = null => its my own message -->
-          <span v-if="m.sender" class="text-opacity-75">{{
-            m.sender + ":"
-          }}</span>
-          <span class="hyphenate" lang="es"> {{ m.text }}</span>
-        </span>
+      <span v-if="m.type === 'message'" class="hyphenate" lang="es">
+        <!-- if m.sender = null => its my own message -->
+        <span v-if="m.sender" class="text-opacity-75">{{
+          m.sender + ":"
+        }}</span>
+        <span class="hyphenate" lang="es"> {{ m.text }}</span>
       </span>
       <span v-else-if="m.type === 'callout'">
         {{ m.text }}
@@ -49,8 +46,14 @@
           typingUsers.length > 1 && index < typingUsers.length - 1 ? "," : ""
         }}
       </span>
-      <span v-if="typingUsers.length === 1">is typing...</span>
-      <span v-else-if="typingUsers.length > 1">are typing...</span>
+      <span v-if="typingUsers.length === 1">
+        <span>is typing</span>
+        <TypingEllipsis />
+      </span>
+      <span v-else-if="typingUsers.length > 1">
+        <span>are typing</span>
+        <TypingEllipsis />
+      </span>
     </span>
   </div>
 </template>
