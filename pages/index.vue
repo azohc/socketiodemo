@@ -30,6 +30,12 @@
         />
         <Button variant="default" @button-clicked="submitMessage">send</Button>
       </div>
+      <Button
+        class="opacity-20 hover:opacity-100"
+        variant="default"
+        @button-clicked="toggleTypingSim"
+        >{{ typing ? "stop typing" : "start typing" }}</Button
+      >
     </div>
   </div>
 </template>
@@ -42,6 +48,17 @@ import { useThrottleFn } from "@vueuse/core";
 
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
+
+let typing = ref(false),
+  interval: NodeJS.Timer;
+const toggleTypingSim = () => {
+  typing.value = !typing.value;
+  if (typing.value) {
+    interval = setInterval(() => socket?.emit("typing"), 400);
+  } else {
+    clearInterval(interval);
+  }
+};
 
 const emitTyping = useThrottleFn((event: KeyboardEvent) => {
   if (socket && event.code !== "Enter") {
@@ -71,15 +88,9 @@ onMounted(() => {
     notifications.value.push({ data, timestamp: new Date() });
   });
 
-  socket.on("message", (message: MessageData) => {
-    console.log("message", message);
-    messages.value.push(message);
-  });
-  socket.on("link", (message: MessageData) => {
-    console.log("link", message);
+  socket.on("message", (message: MessageData) => messages.value.push(message));
 
-    messages.value.push(message);
-  });
+  socket.on("link", (message: MessageData) => messages.value.push(message));
 
   socket.on("callout", (message: MessageData) => messages.value.push(message));
 

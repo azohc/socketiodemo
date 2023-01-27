@@ -40,11 +40,10 @@
     <span
       class="flex gap-2 px-1.5 relative bottom-0 text-black text-opacity-50 italic"
     >
-      <span v-for="(alias, index) in typingUsers"
-        >{{ alias }}
-        {{
-          typingUsers.length > 1 && index < typingUsers.length - 1 ? "," : ""
-        }}
+      <span v-for="(alias, index) in typingUsers">
+        <span>{{ alias }}</span>
+        <span v-if="index === typingUsers.length - 2"> and </span>
+        <span v-else-if="index < typingUsers.length - 2">,</span>
       </span>
       <span v-if="typingUsers.length === 1">
         <span>is typing</span>
@@ -109,7 +108,7 @@ div.messages {
   list-style: none;
   padding: 0;
   margin: 0;
-  height: 66vh;
+  height: 50vh;
   overflow-y: scroll;
 }
 
