@@ -30,12 +30,14 @@
         />
         <Button variant="default" @button-clicked="submitMessage">send</Button>
       </div>
-      <Button
+      <!-- TODO REMOVE -->
+      <!-- <Button
         class="opacity-20 hover:opacity-100"
+        :class="{ 'opacity-100': typing }"
         variant="default"
         @button-clicked="toggleTypingSim"
         >{{ typing ? "stop typing" : "start typing" }}</Button
-      >
+      > -->
     </div>
   </div>
 </template>
@@ -45,6 +47,7 @@ import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import { MessageData, UserData } from "../types";
 import { useThrottleFn } from "@vueuse/core";
+import { replaceLinks } from "~~/shared/replaceLinks";
 
 const focusTarget = ref<HTMLElement>();
 useFocus(focusTarget, { initialValue: true });
@@ -101,7 +104,7 @@ onMounted(() => {
   });
 
   socket.on("userschanged", (userss: Array<UserData>) => {
-    users.value = userss;
+    users.value = userss.filter((user) => user.alias !== clientAlias.value);
   });
 });
 
@@ -113,15 +116,21 @@ function setAlias(alias: string) {
 }
 
 function submitMessage() {
+  function containsURL(s: string) {
+    const regexp =
+      /.*(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*.*/gmu;
+    return regexp.test(s);
+  }
+
   function validURL(s: string) {
-    var regexp =
+    const regexp =
       /^(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*$/gmu;
     return regexp.test(s);
   }
 
   if (socket && textInput.value) {
     let type = "message";
-    if (validURL(textInput.value)) {
+    if (containsURL(textInput.value)) {
       type = "link";
     }
 
@@ -133,6 +142,9 @@ function submitMessage() {
 function sendMessage(message: string, type: MessageData["type"]) {
   if (socket) {
     socket.emit(type, message);
+    if (type === "link") {
+      message = replaceLinks(message);
+    }
     messages.value.push({
       type,
       text: message,

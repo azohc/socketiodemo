@@ -12,6 +12,13 @@
   --color-scrollbar-hover: var(--c-purp-darker);
 }
 
+.link {
+  color: var(--c-purp-dark);
+}
+.link:hover {
+  color: var(--c-purp-darker);
+}
+
 @font-face {
   font-family: "Progesterone";
   font-weight: 400;

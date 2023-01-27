@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { defineNuxtModule } from "@nuxt/kit";
 import { MessageData, UserData } from "~~/types";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { replaceLinks } from "../shared/replaceLinks";
 
 export default defineNuxtModule({
   setup(_, nuxt) {
@@ -56,6 +57,9 @@ export default defineNuxtModule({
         >,
         text: string
       ) {
+        if (eventName === "link") {
+          text = replaceLinks(text);
+        }
         const data: MessageData = {
           text,
           sender: userMap.get(socket.id)?.alias || socket.id,

@@ -23,13 +23,11 @@
         {{ m.text }}
       </span>
       <img v-else-if="m.type === 'img'" :src="m.text" />
-      <span v-else-if="m.type === 'link'" class="text-purple-900 flex gap-2">
+      <span v-else-if="m.type === 'link'" class="flex gap-2">
         <span v-if="m.sender" class="text-opacity-75">{{
           m.sender + ":"
         }}</span>
-        <a :href="m.text" target="_blank">
-          {{ m.text }}
-        </a>
+        <span v-html="m.text"> </span>
       </span>
       <TimeLabel
         class="self-end text-slate-700 text-opacity-75"
